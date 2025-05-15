@@ -1,0 +1,21 @@
+# Go
+/bin/
+/build/
+/dist/
+*.exe
+*.test
+*.out
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# dotenv
+.env
+
+# Swagger
+/docs/swagger.json
+/docs/swagger.yaml

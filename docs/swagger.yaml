@@ -1,0 +1,323 @@
+basePath: /
+definitions:
+  models.LoginInput:
+    properties:
+      email:
+        example: john@example.com
+        type: string
+      password:
+        example: secret123
+        type: string
+    type: object
+  models.Order:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      price:
+        type: number
+      product:
+        type: string
+      quantity:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.OrderInput:
+    properties:
+      price:
+        example: 1499.99
+        type: number
+      product:
+        example: Laptop
+        type: string
+      quantity:
+        example: 2
+        type: integer
+    type: object
+  models.UpdateUserInput:
+    properties:
+      age:
+        example: 35
+        type: integer
+      email:
+        example: updated@example.com
+        type: string
+      name:
+        example: Updated John
+        type: string
+    type: object
+  models.User:
+    properties:
+      age:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.UserInput:
+    properties:
+      age:
+        example: 30
+        type: integer
+      email:
+        example: john@example.com
+        type: string
+      name:
+        example: John Doe
+        type: string
+      password:
+        example: secret123
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Тестовое задание на практику
+  title: User Orders API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Генерирует JWT-токен
+      parameters:
+      - description: Email и пароль
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Авторизация
+      tags:
+      - auth
+  /users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - description: Количество на странице
+        in: query
+        name: limit
+        type: integer
+      - description: Минимальный возраст
+        in: query
+        name: min_age
+        type: integer
+      - description: Максимальный возраст
+        in: query
+        name: max_age
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получить список пользователей
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Информация о пользователе
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание пользователя
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удалить пользователя
+      tags:
+      - users
+    get:
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получить пользователя по ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновлённые данные
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновить пользователя
+      tags:
+      - users
+  /users/{id}/orders:
+    get:
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Order'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Получить список заказов пользователя
+      tags:
+      - orders
+    post:
+      consumes:
+      - application/json
+      description: Добавляет заказ для указанного пользователя
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные заказа
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создать заказ
+      tags:
+      - orders
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
