@@ -35,6 +35,7 @@ func main() {
 
 	r := gin.Default()
 
+	r.Use(middleware.ErrorHandler())
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	public := r.Group("/auth")
