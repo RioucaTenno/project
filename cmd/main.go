@@ -38,13 +38,11 @@ func main() {
 	r.Use(middleware.ErrorHandler())
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	public := r.Group("/auth")
-	public.POST("/login", handlers.Login)
-
+	r.POST("/auth/login", handlers.Login)
+	r.POST("/users", handlers.CreateUser)
 	protected := r.Group("/")
 	protected.Use(middleware.AuthMiddleware())
 	{
-		protected.POST("/users", handlers.CreateUser)
 		protected.GET("/users", handlers.GetUsers)
 		protected.GET("/users/:id", handlers.GetUserByID)
 		protected.PUT("/users/:id", handlers.UpdateUser)

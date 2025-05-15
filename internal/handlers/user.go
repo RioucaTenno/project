@@ -11,7 +11,6 @@ import (
 )
 
 // CreateUser godoc
-// @Security BearerAuth
 // @Summary Создание пользователя
 // @Tags users
 // @Accept json
